@@ -22,7 +22,7 @@ export default function App() {
       {/** The sphere reflects the screen with a cube-cam */}
       <Float rotationIntensity={3} floatIntensity={3} speed={0}>
         <CubeCamera position={[-3, -1, -5]} resolution={256} frames={Infinity}>
-          {(texture) => (
+          {(_texture) => (
             <PigModel position={[0, -4, 0]} rotation={[0, Math.PI, 0]} scale={2}>
               {/* Optional: apply envMap to material if needed */}
             </PigModel>
@@ -48,12 +48,12 @@ export default function App() {
   )
 }
 
-function Rig() {
-  useFrame((state, delta) => {
-    easing.damp3(state.camera.position, [5 + state.pointer.x, 0 + +state.pointer.y, 18 + Math.atan2(state.pointer.x, state.pointer.y) * 2], 0.4, delta)
-    state.camera.lookAt(0, 0, 0)
-  })
-}
+// function Rig() {
+//   useFrame((state, delta) => {
+//     easing.damp3(state.camera.position, [5 + state.pointer.x, 0 + +state.pointer.y, 18 + Math.atan2(state.pointer.x, state.pointer.y) * 2], 0.4, delta)
+//     state.camera.lookAt(0, 0, 0)
+//   })
+// }
 
 const Floor = () => (
   <mesh position={[0, -5.02, 0]} receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
@@ -91,12 +91,12 @@ const Emitter = forwardRef((props, forwardRef) => {
 })
 
 function Screen() {
-  const [material, set] = useState()
+  const [material, setMaterial] = useState()
   return (
     <>
-      <Emitter ref={set} />
+      <Emitter ref={setMaterial} />
       {material && (
-        <EffectComposer disableNormalPass multisampling={8}>
+        <EffectComposer enableNormalPass={false} multisampling={8}>
           <GodRays sun={material} exposure={0.34} decay={0.8} blur />
           <Bloom luminanceThreshold={0} mipmapBlur luminanceSmoothing={0.0} intensity={1} />
         </EffectComposer>
