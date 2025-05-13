@@ -1,14 +1,44 @@
-import * as THREE from 'three'
-import { forwardRef, useState, useEffect } from 'react'
-import { Canvas } from '@react-three/fiber'
+// import * as THREE from 'three'
+import { forwardRef, useState, useEffect, useRef } from 'react'
+import { Canvas, useFrame } from '@react-three/fiber'
 import { CubeCamera, Float, MeshReflectorMaterial, useGLTF, OrbitControls } from '@react-three/drei'
 import { EffectComposer, GodRays, Bloom } from '@react-three/postprocessing'
 
 useGLTF.preload('/models/saeed.glb')
 
 function PigModel(props: any) {
+  const ref = useRef(null)
   const { scene } = useGLTF('/models/saeed.glb')
-  return <primitive object={scene} {...props} />
+
+  useEffect(() => {
+    const handleClick = () => {
+      const song = new Audio('/song.mp3')
+      song.play()
+    }
+  
+    window.addEventListener("click", handleClick)
+  
+    return () => {
+      window.removeEventListener("click", handleClick)
+    }
+  }, [])
+
+  // Optional: Animate rotation
+  useFrame((_state, delta) => {
+    if (ref.current) {
+      (ref as any).current.rotation.y += delta * 0.2
+    }
+  })
+
+  return (
+    <primitive
+      ref={ref}
+      object={scene}
+      {...props}
+      onPointerOver={(e: any) => (document.body.style.cursor = 'pointer')}
+      onPointerOut={(e: any) => (document.body.style.cursor = 'default')}
+    />
+  )
 }
 
 export default function App() {
@@ -79,7 +109,7 @@ const Emitter = forwardRef((props, forwardRef) => {
     <mesh ref={forwardRef} position={[0, 0, -16]} {...props}>
       <planeGeometry args={[16, 10]} />
       <meshBasicMaterial>
-        <videoTexture attach="map" args={[video]} colorSpace={THREE.SRGBColorSpace} />
+        {/* <videoTexture attach="map" args={[video]} colorSpace={THREE.SRGBColorSpace} /> */}
       </meshBasicMaterial>
       <mesh scale={[16.05, 10.05, 1]} position={[0, 0, -0.01]}>
         <planeGeometry />
