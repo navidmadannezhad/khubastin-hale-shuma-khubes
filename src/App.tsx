@@ -1,9 +1,8 @@
 import * as THREE from 'three'
 import { forwardRef, useState, useEffect } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Canvas } from '@react-three/fiber'
 import { CubeCamera, Float, MeshReflectorMaterial, useGLTF, OrbitControls } from '@react-three/drei'
 import { EffectComposer, GodRays, Bloom } from '@react-three/postprocessing'
-import { easing } from 'maath'
 
 useGLTF.preload('/models/saeed.glb')
 
