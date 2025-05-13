@@ -35,8 +35,8 @@ function PigModel(props: any) {
       ref={ref}
       object={scene}
       {...props}
-      onPointerOver={(e: any) => (document.body.style.cursor = 'pointer')}
-      onPointerOut={(e: any) => (document.body.style.cursor = 'default')}
+      onPointerOver={(_e: any) => (document.body.style.cursor = 'pointer')}
+      onPointerOut={(_e: any) => (document.body.style.cursor = 'default')}
     />
   )
 }
