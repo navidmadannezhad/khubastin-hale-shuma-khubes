@@ -16,7 +16,6 @@ function PigModel(props: any) {
 
   useEffect(() => {
     const handleClick = () => {
-      console.log(song)
       if(!song){
         setSong(
           new Audio('/song.mp3')
@@ -29,6 +28,10 @@ function PigModel(props: any) {
     return () => {
       window.removeEventListener("click", handleClick)
     }
+  }, [song])
+
+  useEffect(() => {
+    if(song) song.play();
   }, [song])
 
   // Optional: Animate rotation
@@ -114,14 +117,13 @@ const Floor = () => (
 )
 
 const Emitter = forwardRef((props, forwardRef) => {
-  const [video] = useState(() => Object.assign(document.createElement('video'), { src: '/test.mp4', crossOrigin: 'Anonymous', loop: true, muted: true }))
-  useEffect(() => void video.play(), [video])
+  const texture = new THREE.TextureLoader().load('/test.png')
+
   return (
     <mesh ref={forwardRef} position={[0, 0, -16]} {...props}>
       <planeGeometry args={[16, 10]} />
-      <meshBasicMaterial>
-        {/* <videoTexture attach="map" args={[video]} colorSpace={THREE.SRGBColorSpace} /> */}
-      </meshBasicMaterial>
+      <meshBasicMaterial map={texture} toneMapped={false} />
+      {/* Optional: Add a black border plane behind it like before */}
       <mesh scale={[16.05, 10.05, 1]} position={[0, 0, -0.01]}>
         <planeGeometry />
         <meshBasicMaterial color="black" />
