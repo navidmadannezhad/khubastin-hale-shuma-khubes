@@ -1,19 +1,27 @@
-// import * as THREE from 'three'
+import * as THREE from 'three'
 import { forwardRef, useState, useEffect, useRef } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { CubeCamera, Float, MeshReflectorMaterial, useGLTF, OrbitControls } from '@react-three/drei'
+import { CubeCamera, Float, MeshReflectorMaterial, useGLTF, OrbitControls, useAnimations } from '@react-three/drei'
 import { EffectComposer, GodRays, Bloom } from '@react-three/postprocessing'
 
 useGLTF.preload('/models/saeed.glb')
 
 function PigModel(props: any) {
+  const group = useRef(null);
+  const [mixer] = useState(() => new THREE.AnimationMixer({}));
+  const actions = useRef(null);
   const ref = useRef(null)
-  const { scene } = useGLTF('/models/saeed.glb')
+  const [song, setSong] = useState<HTMLAudioElement | null>(null);
+  const { scene, animations } = useGLTF('/models/saeed.glb')
 
   useEffect(() => {
     const handleClick = () => {
-      const song = new Audio('/song.mp3')
-      song.play()
+      console.log(song)
+      if(!song){
+        setSong(
+          new Audio('/song.mp3')
+        )
+      }
     }
   
     window.addEventListener("click", handleClick)
@@ -21,30 +29,33 @@ function PigModel(props: any) {
     return () => {
       window.removeEventListener("click", handleClick)
     }
-  }, [])
+  }, [song])
 
   // Optional: Animate rotation
-  useFrame((_state, delta) => {
-    if (ref.current) {
-      (ref as any).current.rotation.y += delta * 0.2
-    }
-  })
+  useFrame((_state, delta) => mixer.update(delta));
+  useEffect(() => {
+    (actions as any).current = { idle: mixer.clipAction(animations[0], (group as any).current) };
+    (actions as any).current.idle.play();
+    return () => animations.forEach((clip) => mixer.uncacheClip(clip));
+  }, []);
 
   return (
-    <primitive
-      ref={ref}
-      object={scene}
-      {...props}
-      onPointerOver={(_e: any) => (document.body.style.cursor = 'pointer')}
-      onPointerOut={(_e: any) => (document.body.style.cursor = 'default')}
-    />
+    <group ref={group} dispose={null}>
+      <primitive
+        ref={ref}
+        object={scene}
+        {...props}
+        onPointerOver={(_e: any) => (document.body.style.cursor = 'pointer')}
+        onPointerOut={(_e: any) => (document.body.style.cursor = 'default')}
+      />
+    </group>
   )
 }
 
 export default function App() {
   return (
     <Canvas camera={{ position: [0, 0, 30], fov: 35, near: 1, far: 60 }} gl={{ antialias: false }}>
-      <color attach="background" args={['#050505']} />
+      <color attach="background" args={['pink']} />
       <ambientLight />
       {/** The screen uses postpro godrays */}
       <Screen />
